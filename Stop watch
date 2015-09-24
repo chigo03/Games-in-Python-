@@ -1,0 +1,93 @@
+# template for "Stopwatch: The Game"
+import simplegui
+# define global variables
+minutes = 0
+seconds1 = 0
+seconds2 = 0
+milisec = 0
+t = 0
+count1 = 0
+count2 = 0
+message = str(minutes) + ":" + str(seconds1) + str(seconds2) + "." + str(milisec)
+score = "Score: " + str(count1) + "/" + str(count2)
+helpp1 = "Try to stop the watch when miliseconds are zero"
+helpp2 = "For eg. 1:34.0 or 0:09.0"
+# define helper function format that converts time
+# in tenths of seconds into formatted string A:BC.D
+def formatt(t):
+    global message
+    global milisec
+    milisec = t%10
+    sec = t / 10
+    if sec < 60:
+        seconds2 = sec % 10
+        seconds1 = sec / 10
+        minutes = 0
+    elif sec >= 60:
+        minutes = sec / 60
+        seconds = sec - (minutes * 60)
+        seconds1 = seconds / 10
+        seconds2 = seconds % 10
+    message = str(minutes)+":"+str(seconds1)+str(seconds2)+"."+str(milisec)
+    milisec = milisec
+    
+    
+# define event handlers for buttons; "Start", "Stop", "Reset"
+def start_handler():
+    timer.start()
+    
+
+def stop_handler():
+    global count1
+    global count2
+    global milisec
+    timer.stop()
+    count2 += 1
+    if milisec == 0:
+        count1 += 1
+    global score
+    score = "Score: " + str(count1) + "/" + str(count2)
+
+def reset_handler():
+    global message
+    global score
+    timer.stop()
+    minutes = 0
+    seconds1 = 0
+    seconds2 = 0
+    milisec = 0
+    count1 = 0
+    count2 = 0
+    message = str(minutes)+":"+str(seconds1)+str(seconds2)+"."+str(milisec)
+    score = "Score: " + str(count1) + "/" + str(count2)
+
+# define event handler for timer with 0.1 sec interval
+def event_handler():
+    global t
+    t += 1
+    formatt(t)
+
+# define draw handler
+def draw(canvas):
+    canvas.draw_text(message, (70,110), 65, "White")
+    canvas.draw_text(score, (190,30), 25, "Yellow")
+    canvas.draw_text(helpp1, (5,170), 15, "Silver")
+    canvas.draw_text(helpp2, (5,190), 15, "Silver")
+
+    
+# create frame
+f = simplegui.create_frame("STOPWATCH",300,200)
+
+
+# register event handlers
+f.set_draw_handler(draw)
+f.add_label('THE STOPWATCH GAME')
+f.add_label('')
+f.add_button("Start", start_handler, 75)
+f.add_button("Stop", stop_handler, 75)
+f.add_button("Reset", reset_handler, 75)
+timer = simplegui.create_timer(100,event_handler)
+
+# start frame
+f.start()
+
