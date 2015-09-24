@@ -1,0 +1,76 @@
+#        R U L E S
+# Matching Numbers Memory Game
+# TRY IN MINIMUM NUMBER OF TURNS
+
+# implementation of card game - Memory
+import simplegui
+import random
+
+CARD_WIDTH = 50
+card_list, card_list1 = range(8), range(8)
+card1 = card2 = count = 0
+exposed = []
+for i in range(0,16):
+        exposed.append(False)
+
+# helper function to initialize globals
+def new_game():
+    global state, card1, card2, card_list, card_list1, count
+    for i in range(0,16):
+        exposed[i] = False
+    state, card1, card2 = 0, 0, 0
+    card_list, card_list1 = range(8), range(8)
+    card_list.extend(card_list1)
+    random.shuffle(card_list)
+    count = 0
+
+# define event handlers
+def mouseclick(pos):
+    global state, card1, card2, count
+    point =  pos[0] // 50
+    if exposed[point] == True:
+        pass
+    elif state == 0:
+        exposed[point] = True
+        state = 1
+        card1 = point
+    elif state == 1:
+        exposed[point] = True
+        card2 = point
+        state = 2
+        count += 1
+    else:
+        state = 1
+        if card_list[card1] != card_list[card2]:
+            exposed[card1], exposed[card2] = False, False
+        else:
+            pass
+        card1 = point
+        exposed[point] = True
+                        
+# cards are logically 50x100 pixels in size    
+def draw(canvas):
+    global CARD_WIDTH, card_list, state
+    x = CARD_WIDTH
+    for n in range (0, 16):
+        if exposed[n] == False:
+            canvas.draw_polygon([[x*n, 0],[x*n, 100], [x*n+50, 100], [x*n+50, 0]], 4, 'Yellow', 'Green')
+        else:
+            canvas.draw_polygon([[x*n, 0],[x*n, 100], [x*n+50, 100], [x*n+50, 0]], 4, 'Yellow')
+            canvas.draw_text(str(card_list[n]), (x*n+15, 60), 35, 'White')    
+    label.set_text("Turns = " + str(count))
+
+
+# create frame and add a button and labels
+frame = simplegui.create_frame("Memory", 800, 100)
+frame.add_button("Reset", new_game)
+label = frame.add_label("Turns = 0")
+
+# register event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# get things rolling
+new_game()
+frame.start()
+# Always remember to review the grading rubric
